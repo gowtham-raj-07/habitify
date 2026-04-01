@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Loader from "../Components/Ui/Loader";
 import SleepTable from "../Components/Sleep/SleepTable";
 import SleepChart from "../Components/Sleep/SleepChart";
 import SleepStats from "../Components/Sleep/SleepStats";
@@ -69,7 +70,7 @@ function Sleep() {
     year: "numeric",
   });
 
-  if (loading) return null;
+  if (loading) return <Loader />;
 
   return (
     <div className="p-6 w-full space-y-8 animate-fadeIn">

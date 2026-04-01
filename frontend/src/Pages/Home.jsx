@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import Loader from "../Components/Ui/Loader";
 
 import AddHabitModal from "../Components/Habits/AddHabitModal";
 import EmptyState from "../Components/Habits/EmptyState";
@@ -108,7 +109,7 @@ function Home() {
     setHabits((p) => p.filter((h) => h._id !== id));
   }
 
-  if (loading) return null;
+  if (loading) return <Loader />;
 
   return (
     <div className="p-6">

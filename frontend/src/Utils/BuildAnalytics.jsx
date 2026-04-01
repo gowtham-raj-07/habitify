@@ -16,12 +16,13 @@ export default function buildAnalyticsData(habits, dates) {
   });
 
   habits.forEach((h) => {
-    let c = 0;
-    let m = 0;
+    let allTimeCompleted = 0;
+    let allTimeMissed = 0;
 
     const created = new Date(h.createdAt);
     created.setHours(0, 0, 0, 0);
 
+    // 1. Calculate By Date (Month specific for Bar Chart)
     dates.forEach((d) => {
       const current = new Date(d);
       current.setHours(0, 0, 0, 0);
@@ -37,16 +38,28 @@ export default function buildAnalyticsData(habits, dates) {
       const value = h.records?.[key];
 
       if (value === true) {
-        c++;
-        completed++;
         byDate[key].completed++;
-      } else {
-        m++;
-        missed++;
       }
     });
 
-    byHabit[h.task] = { completed: c, missed: m };
+    // 2. Calculate All-Time for Pie Charts & Summaries
+    for (let d = new Date(created); d <= today; d.setDate(d.getDate() + 1)) {
+      const copy = new Date(d);
+      copy.setHours(0, 0, 0, 0);
+
+      if (h.frequency?.includes(dayName(copy))) {
+        const key = copy.toISOString().split("T")[0];
+        if (h.records?.[key] === true) {
+          allTimeCompleted++;
+          completed++;
+        } else {
+          allTimeMissed++;
+          missed++;
+        }
+      }
+    }
+
+    byHabit[h.task] = { completed: allTimeCompleted, missed: allTimeMissed };
   });
 
   return { byDate, byHabit, overall: { completed, missed } };

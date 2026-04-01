@@ -1,19 +1,79 @@
 import { useEffect, useState } from "react";
+import Loader from "../Components/Ui/Loader";
 import { fetchProfile } from "../Api/UserApi";
+import { fetchHabits } from "../Api/HabitApi";
+import { fetchNotes } from "../Api/NoteApi";
 import { useNavigate } from "react-router-dom";
 import { User as UserIcon, CheckSquare, BedDouble, FileText } from "lucide-react";
 
 function User() {
   const [data, setData] = useState(null);
+  const [computedHabits, setComputedHabits] = useState({ created: 0, completed: 0, missed: 0 });
+  const [computedNotes, setComputedNotes] = useState({ count: 0, totalWeight: 0, avgWeight: 0 });
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProfile().then((res) => setData(res.data));
+    Promise.all([fetchProfile(), fetchHabits(), fetchNotes()]).then(([profileRes, habitsRes, notesRes]) => {
+      setData(profileRes.data);
+
+      const habitsList = habitsRes.data || [];
+      const notesList = notesRes.data || [];
+
+      // Compute Habits All-time Stats
+      let totalCompleted = 0;
+      let totalMissed = 0;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const dayName = (d) => ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()];
+
+      habitsList.forEach((h) => {
+        const created = new Date(h.createdAt);
+        created.setHours(0, 0, 0, 0);
+
+        for (let d = new Date(created); d <= today; d.setDate(d.getDate() + 1)) {
+          const copy = new Date(d);
+          copy.setHours(0, 0, 0, 0);
+
+          if (h.frequency?.includes(dayName(copy))) {
+            const key = copy.toISOString().split("T")[0];
+            if (h.records?.[key] === true) {
+              totalCompleted++;
+            } else {
+              totalMissed++;
+            }
+          }
+        }
+      });
+
+      setComputedHabits({
+        created: habitsList.length,
+        completed: totalCompleted,
+        missed: totalMissed
+      });
+
+      // Compute Notes Weight Stats
+      let totalWeight = 0;
+      notesList.forEach(n => {
+        totalWeight += (n.weight || 0);
+      });
+      const avgWeight = notesList.length > 0 ? Math.round(totalWeight / notesList.length) : 0;
+
+      setComputedNotes({
+        count: notesList.length,
+        totalWeight,
+        avgWeight
+      });
+
+      setLoading(false);
+    });
   }, []);
 
-  if (!data) return null;
+  if (loading || !data) return <Loader />;
 
-  const { user, habits, sleep, notes } = data;
+  const { user, sleep } = data;
 
   return (
     <div className="p-6 max-w-4xl mx-auto space-y-8 animate-fadeIn">
@@ -59,15 +119,15 @@ function User() {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-500 dark:text-gray-400">Created</span>
-              <span className="font-bold text-cyan-600 dark:text-cyan-400">{habits.created || 0}</span>
+              <span className="font-bold text-cyan-600 dark:text-cyan-400">{computedHabits.created}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500 dark:text-gray-400">Days Completed</span>
-              <span className="font-bold text-green-400">{habits.completed || 0}</span>
+              <span className="font-bold text-green-400">{computedHabits.completed}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-500 dark:text-gray-400">Days Missed</span>
-              <span className="font-bold text-red-400">{habits.missed || 0}</span>
+              <span className="font-bold text-red-400">{computedHabits.missed}</span>
             </div>
           </div>
         </div>
@@ -107,7 +167,15 @@ function User() {
           <div className="space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-500 dark:text-gray-400">Total Created</span>
-              <span className="font-bold dark:text-gray-200">{notes.count}</span>
+              <span className="font-bold dark:text-gray-200">{computedNotes.count}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500 dark:text-gray-400">Total Weight</span>
+              <span className="font-bold text-amber-500">{computedNotes.totalWeight}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-gray-500 dark:text-gray-400">Avg Weight</span>
+              <span className="font-bold text-amber-300">{computedNotes.avgWeight}</span>
             </div>
           </div>
         </div>

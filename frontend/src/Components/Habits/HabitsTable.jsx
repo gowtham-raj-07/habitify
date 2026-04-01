@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 function HabitsTable({ habits, dates, onToggle, onEdit, onDelete }) {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -7,6 +9,14 @@ function HabitsTable({ habits, dates, onToggle, onEdit, onDelete }) {
   const dayName = (d) =>
     ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][d.getDay()];
 
+  const todayRef = useRef(null);
+
+  useEffect(() => {
+    if (todayRef.current) {
+      todayRef.current.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }, [dates]);
+
   return (
     <div className="neon-card overflow-x-auto">
       <table className="min-w-full border-collapse text-center">
@@ -15,12 +25,19 @@ function HabitsTable({ habits, dates, onToggle, onEdit, onDelete }) {
             <th className="p-3 text-left">Habit</th>
             <th className="p-3 text-left">Goal</th>
 
-            {dates.map((d) => (
-              <th key={keyOf(d)} className="p-2 min-w-[50px]">
-                <div className="text-sm font-semibold">{d.getDate()}</div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">{dayName(d)}</div>
-              </th>
-            ))}
+            {dates.map((d) => {
+              const isToday = keyOf(d) === keyOf(today);
+              return (
+                <th
+                  key={keyOf(d)}
+                  className="p-2 min-w-[50px]"
+                  ref={isToday ? todayRef : null}
+                >
+                  <div className="text-sm font-semibold">{d.getDate()}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">{dayName(d)}</div>
+                </th>
+              );
+            })}
 
             <th className="p-3">Current</th>
             <th className="p-3">Longest</th>

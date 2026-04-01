@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import Cookies from "js-cookie";
 
 const AuthContext = createContext();
 
@@ -9,15 +10,19 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     function loadAuthFromStorage() {
-      const storedToken = localStorage.getItem("token");
-      const storedUser = localStorage.getItem("user");
+      const storedToken = Cookies.get("token");
+      const storedUser = Cookies.get("user");
 
       if (storedToken) {
         setToken(storedToken);
       }
 
       if (storedUser) {
-        setUser(JSON.parse(storedUser));
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error("Failed to parse user cookie", e);
+        }
       }
 
       setLoading(false);
@@ -27,16 +32,16 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (token, user) => {
-    localStorage.setItem("token", token);
-    localStorage.setItem("user", JSON.stringify(user));
+    Cookies.set("token", token, { expires: 30 }); // Expire in 30 days
+    Cookies.set("user", JSON.stringify(user), { expires: 30 });
 
     setToken(token);
     setUser(user);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
+    Cookies.remove("token");
+    Cookies.remove("user");
 
     setToken(null);
     setUser(null);

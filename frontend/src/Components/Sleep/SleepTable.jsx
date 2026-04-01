@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef } from "react";
 
 function SleepTable({ days, sleepData = {}, setSleepData, onSave, createdAt }) {
   const today = new Date();
@@ -8,6 +8,15 @@ function SleepTable({ days, sleepData = {}, setSleepData, onSave, createdAt }) {
   created.setHours(0, 0, 0, 0);
 
   const formatDate = (d) => d.toISOString().split("T")[0];
+
+  const todayStr = formatDate(today);
+  const todayRef = useRef(null);
+
+  useEffect(() => {
+    if (todayRef.current) {
+      todayRef.current.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+  }, [days]);
 
   const isDisabled = (d) => {
     const current = new Date(d);
@@ -39,11 +48,19 @@ function SleepTable({ days, sleepData = {}, setSleepData, onSave, createdAt }) {
         <thead>
           <tr>
             <th rowSpan="2" className="p-2 border-b border-r border-gray-200 dark:border-gray-700 text-gray-900 dark:text-cyan-400">Sleep</th>
-            {days.map((d) => (
-              <th key={d.toISOString()} colSpan="2" className="p-2 border-b border-gray-200 dark:border-gray-700 font-semibold text-gray-700 dark:text-gray-300">
-                {d.getDate()}
-              </th>
-            ))}
+            {days.map((d) => {
+              const isToday = formatDate(d) === todayStr;
+              return (
+                <th
+                  key={d.toISOString()}
+                  colSpan="2"
+                  className={`p-2 border-b border-gray-200 dark:border-gray-700 font-semibold ${isToday ? 'text-cyan-500 dark:text-cyan-400' : 'text-gray-700 dark:text-gray-300'}`}
+                  ref={isToday ? todayRef : null}
+                >
+                  {d.getDate()}
+                </th>
+              );
+            })}
           </tr>
           <tr>
             {days.map((d) => (

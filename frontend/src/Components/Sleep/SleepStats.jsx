@@ -9,7 +9,7 @@ function SleepStats({ sleepData = {} }) {
       <Stat label="Best Day" value={`${stats.best} hrs`} color="text-green-400" />
       <Stat label="Worst Day" value={`${stats.worst} hrs`} color="text-red-400" />
       <Stat label="Consistency" value={`±${stats.consistency} hrs`} color="text-violet-400" />
-      <Stat label="Goal Met" value={`${stats.goalMet} days`} color="text-amber-400" />
+      <Stat label={<>Goal Met <span className="text-[10px] text-gray-400 group-hover:text-white/80 block">(8+ hrs)</span></>} value={`${stats.goalMet} days`} color="text-amber-400" />
     </div>
   );
 }

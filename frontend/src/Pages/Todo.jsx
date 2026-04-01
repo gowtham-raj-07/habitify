@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
+import Loader from "../Components/Ui/Loader";
 import {
   fetchNotes,
   createNote,
   updateNote,
   deleteNote,
-} from "../Api/noteApi";
+} from "../Api/NoteApi";
 
 import AddNoteModal from "../Components/Todo/AddNoteModal";
 import NotesGrid from "../Components/Todo/NotesGrid";
@@ -81,7 +82,7 @@ function Todo() {
     setNotes((prev) => prev.filter((n) => n._id !== id));
   }
 
-  if (loading) return null;
+  if (loading) return <Loader />;
 
   return (
     <div className="p-6 max-w-6xl mx-auto animate-fadeIn">
