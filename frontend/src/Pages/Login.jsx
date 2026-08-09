@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import API from "../Api/Axios";
 import { useAuth } from "../Context/AuthContext";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -14,10 +15,11 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      const res = await axios.post(
-        "https://habitify-gkcp.onrender.com/api/auth/login",
+      const res = await API.post(
+        "/auth/login",
         { email, password }
       );
 
@@ -26,6 +28,8 @@ function Login() {
       navigate("/splash");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,11 +54,13 @@ function Login() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          disabled={loading}
           className="w-full mb-4 px-4 py-2 rounded-lg
                      bg-transparent border border-cyan-400/40
                      text-white placeholder-gray-400
                      focus:outline-none focus:border-cyan-300
-                     focus:shadow-[0_0_12px_rgba(34,211,238,0.7)]"
+                     focus:shadow-[0_0_12px_rgba(34,211,238,0.7)]
+                     disabled:opacity-50 disabled:cursor-not-allowed"
         />
 
         <input
@@ -62,21 +68,32 @@ function Login() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          disabled={loading}
           className="w-full mb-6 px-4 py-2 rounded-lg
                      bg-transparent border border-cyan-400/40
                      text-white placeholder-gray-400
                      focus:outline-none focus:border-cyan-300
-                     focus:shadow-[0_0_12px_rgba(34,211,238,0.7)]"
+                     focus:shadow-[0_0_12px_rgba(34,211,238,0.7)]
+                     disabled:opacity-50 disabled:cursor-not-allowed"
         />
 
         <button
+          disabled={loading}
           className="w-full py-2 rounded-full
                      bg-cyan-400 text-black font-semibold
                      hover:bg-cyan-300
                      hover:shadow-[0_0_20px_rgba(34,211,238,0.9)]
-                     transition"
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     transition flex items-center justify-center gap-2"
         >
-          Login
+          {loading ? (
+            <>
+              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+              <span>Logging in...</span>
+            </>
+          ) : (
+            "Login"
+          )}
         </button>
 
         <div className="text-center text-sm text-gray-400 mt-4">
@@ -90,4 +107,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default Login;

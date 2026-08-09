@@ -17,7 +17,7 @@ export const register = async (req,res) => {
         await user.save();
 
         let payload = {userId : user._id};
-        let token = jwt.sign(payload,process.env.secret_key,{expiresIn : "7d"});
+        let token = jwt.sign(payload, process.env.SECRET_KEY || process.env.secret_key || "secret_key", { expiresIn: "7d" });
 
         res.json({token, user:{id: user._id, name: user.name ,email: user.email,}});
         console.log(token);
@@ -41,7 +41,7 @@ export const login = async (req,res) => {
         if (!isMatch) return res.status(400).json({message: "Invalid Credentials"});
 
         let payload = {userId: user._id};
-        let token = jwt.sign(payload,process.env.secret_key,{expiresIn: "7d"});
+        let token = jwt.sign(payload, process.env.SECRET_KEY || process.env.secret_key || "secret_key", { expiresIn: "7d" });
 
         res.json({token, user:{id: user._id, name: user.name, email: user.email}});
 

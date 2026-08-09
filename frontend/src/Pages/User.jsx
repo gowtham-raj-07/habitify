@@ -122,11 +122,11 @@ function User() {
               <span className="font-bold text-cyan-600 dark:text-cyan-400">{computedHabits.created}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500 dark:text-gray-400">Days Completed</span>
+              <span className="text-gray-500 dark:text-gray-400">Habits Done</span>
               <span className="font-bold text-green-400">{computedHabits.completed}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-gray-500 dark:text-gray-400">Days Missed</span>
+              <span className="text-gray-500 dark:text-gray-400">Habits Not Done</span>
               <span className="font-bold text-red-400">{computedHabits.missed}</span>
             </div>
           </div>

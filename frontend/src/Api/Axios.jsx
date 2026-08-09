@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const API = axios.create({
-  baseURL: "https://habitify-gkcp.onrender.com/api",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://habitify-gkcp.onrender.com/api",
 });
 
 API.interceptors.request.use(
