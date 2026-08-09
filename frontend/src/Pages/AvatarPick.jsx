@@ -6,7 +6,6 @@ const avatars = [
   "https://cdn.dribbble.com/userupload/23308831/file/original-f24f048df47bd5bd44e289ccffae7ec3.png",
   "https://www.shutterstock.com/image-vector/june-7-2024-batman-illustration-600nw-2481357159.jpg",
   "https://www.shutterstock.com/image-vector/captain-america-shield-icon-silhouette-600nw-2672870969.jpg",
-  "https://fastdecals.com/shop/images/detailed/34/deadpool-decal-sticker-17FC-1.webp",
   "https://i.pinimg.com/originals/1c/66/e3/1c66e391b67ffb540a8da0aacdd0f259.jpg",
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOPFtk_kpT6mfbpNOM3GMVmN1E_DcqByOVYQ&s",
   "https://subwaysurfers.com/media/gtbfdkc0/upgradeplay.jpg",
@@ -69,4 +68,4 @@ function AvatarPick() {
   );
 }
 
-export default AvatarPick;
+export default AvatarPick;
